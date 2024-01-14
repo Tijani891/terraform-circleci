@@ -1,40 +1,57 @@
 version: 2.1
+
 jobs:
-  test:
+  create-eks-cluster:
     docker:
-      - image: cimg/base:stable
+      - image: ubuntu:latest # Replace with the desired Terraform version
+    environment:
+      AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+      AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+      AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
     steps:
       - checkout
-      # Replace this with a real test runner invocation
+      - setup_remote_docker:
+          docker_layer_caching: false
       - run:
-          name: Run tests
-          command: echo 'replace me with real tests!' && false
-  build:
-    docker:
-      - image: cimg/base:stable
-    steps:
-      - checkout
-      # Replace this with steps to build a package, or executable
+          name: Update apt package
+          command: |
+            apt-get update -y
+      # Install AWS CLI (if not present in the Terraform image)
       - run:
-          name: Build an artifact
-          command: touch example.txt
-      - store_artifacts:
-          path: example.txt
-  deploy:
-    docker:
-      - image: cimg/base:stable
-    steps:
-      # Replace this with steps to deploy to users
+          name: Install AWS CLI
+          command: |
+            apk add --no-cache python3
+            pip3 install --upgrade pip
+            pip3 install awscli
+
       - run:
-          name: deploy
-          command: "#e.g. ./deploy.sh"
+          name: Install Prerequisites
+          command: |
+            apt-get update && apt-get install -y unzip wget
+
+      # Download and install Terraform
+      - run:
+          name: Install Terraform
+          command: |
+            wget https://releases.hashicorp.com/terraform/1.0.0/terraform_1.0.0_linux_amd64.zip
+            unzip terraform_1.0.0_linux_amd64.zip
+            mv terraform /usr/local/bin/
+
+      # Display Terraform version
+      - run:
+          name: Terraform Version
+          command: terraform version
+      # Initialize Terraform
+      - run:
+          name: Terraform Init
+          command: terraform init
+
+      # Apply Terraform changes to create EKS cluster
+      - run:
+          name: Terraform Plan
+          command: terraform plan
+
 workflows:
-  example:
+  create-eks:
     jobs:
-      - test
-      - build:
-          requires:
-            - test
-      - deploy:
-          requires:
-            - test
+      - create-eks-cluster
