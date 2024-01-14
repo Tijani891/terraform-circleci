@@ -30,6 +30,11 @@ jobs:
           command: aws --version
 
       - run:
+          name: show present working dir
+          command: |
+            pwd
+
+      - run:
           name: Install Prerequisites
           command: |
             apt-get update && apt-get install -y unzip wget
