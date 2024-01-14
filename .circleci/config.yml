@@ -30,9 +30,15 @@ jobs:
           command: aws --version
 
       - run:
-          name: show present working dir
+          name: Install Git
           command: |
-            pwd
+            apt-get update -y
+            apt-get install -y git
+
+      # Display Git version for verification
+      - run:
+          name: Verify Git installation
+          command: git --version
 
       - run:
           name: Install Prerequisites
