@@ -80,7 +80,7 @@ jobs:
 workflows:
   create-eks:
     jobs:
-      - create-eks-cluster
-      - lint_terraform:
+      - lint_terraform
+      - create-eks-cluster:
           requires:
-            - create-eks-cluster
+            - lint_terraform
