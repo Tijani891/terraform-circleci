@@ -13,9 +13,7 @@ jobs:
             curl -fLSs https://circle.ci/cli | sudo bash
       - run:
           name: Lint CircleCI Config
-          command: |
-            cd .circleci
-            circleci config validate
+          command: circleci config validate .circleci/config.yml
 
   create-eks-cluster:
     docker:
