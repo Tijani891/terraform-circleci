@@ -1,6 +1,22 @@
 version: 2.1
 
 jobs:
+  lint_terraform:
+    docker:
+      - image: cimg/base:2024.01
+    steps:
+      - checkout
+      - run:
+          name: Install circleci-config-cli
+          command: |
+            sudo apt-get update && sudo apt-get install -y curl
+            curl -fLSs https://circle.ci/cli | sudo bash
+      - run:
+          name: Lint CircleCI Config
+          command: |
+            cd .circleci
+            circleci config validate
+
   create-eks-cluster:
     docker:
       - image: ubuntu:latest # Replace with the desired Terraform version
@@ -67,3 +83,6 @@ workflows:
   create-eks:
     jobs:
       - create-eks-cluster
+      - lint_terraform:
+          requires:
+            - create-eks-cluster
