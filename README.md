@@ -1,4 +1,4 @@
-# Terraform CircleCI Example
+# Terraform CircleCI 
 
 This repository provides an example of fully automating infrastructure deployment using Terraform with CircleCI. All Terraform processes, including initialization, planning, and applying changes, are handled by CircleCI.
 
